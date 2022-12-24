@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"strings"
 
 	"github.com/pborman/getopt/v2"
 )
@@ -9,6 +12,7 @@ import (
 func main() {
 	helpFlag := getopt.BoolLong("help", 'h', "display help")
 	files := getopt.ListLong("file", 'f', "")
+	projectName := getopt.StringLong("project-name", 'p', "")
 	getopt.Parse()
 	if *helpFlag {
 		fmt.Print(help())
@@ -16,6 +20,21 @@ func main() {
 	if len(*files) == 0 {
 		// default
 		*files = []string{"docker-compose.yml"}
+	}
+	if *projectName == "" {
+		// default
+		dir, err := os.Getwd()
+		if err != nil {
+			log.Fatal(err)
+		}
+		// Note: Could use strings.TrimSuffix here, but converting to []rune and
+		// back isn't expensive IMO
+		dirRune := []rune(dir)
+		if dirRune[len(dirRune)-1] == os.PathSeparator {
+			dir = string(dirRune[:len(dirRune)-1])
+		}
+		dirs := strings.Split(dir, string(os.PathSeparator))
+		*projectName = dirs[len(dirs)-1]
 	}
 }
 
