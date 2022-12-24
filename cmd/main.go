@@ -15,18 +15,22 @@ func main() {
 	projectName := getopt.StringLong("project-name", 'p', "")
 	profileName := getopt.StringLong("profile", 0, "")
 	verboseFlag := getopt.BoolLong("verbose", 0, "")
+	logLevel := getopt.StringLong("log-level", 0, "")
 	err := getopt.Getopt(nil)
 	if err != nil {
 		fmt.Println(help())
 		os.Exit(0)
 	}
+
 	if *helpFlag {
 		fmt.Print(help())
 	}
+
 	if len(*files) == 0 {
 		// default
 		*files = []string{"docker-compose.yml"}
 	}
+
 	if *projectName == "" {
 		// default
 		dir, err := os.Getwd()
@@ -41,6 +45,11 @@ func main() {
 		}
 		dirs := strings.Split(dir, string(os.PathSeparator))
 		*projectName = dirs[len(dirs)-1]
+	}
+
+	if *logLevel != "" && strings.ToUpper(*logLevel) != "DEBUG" && strings.ToUpper(*logLevel) != "INFO" && strings.ToUpper(*logLevel) != "WARNING" && strings.ToUpper(*logLevel) != "ERROR" && strings.ToUpper(*logLevel) != "CRITICAL" {
+		fmt.Println(help())
+		os.Exit(0)
 	}
 }
 
