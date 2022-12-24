@@ -8,9 +8,14 @@ import (
 
 func main() {
 	helpFlag := getopt.BoolLong("help", 'h', "display help")
+	files := getopt.ListLong("file", 'f', "")
 	getopt.Parse()
 	if *helpFlag {
 		fmt.Print(help())
+	}
+	if len(*files) == 0 {
+		// default
+		*files = []string{"docker-compose.yml"}
 	}
 }
 
