@@ -13,8 +13,13 @@ func main() {
 	helpFlag := getopt.BoolLong("help", 'h', "display help")
 	files := getopt.ListLong("file", 'f', "")
 	projectName := getopt.StringLong("project-name", 'p', "")
-	profileName := getopt.StringLong("profile", '0', "")
-	getopt.Parse()
+	profileName := getopt.StringLong("profile", 0, "")
+	verboseFlag := getopt.BoolLong("verbose", 0, "")
+	err := getopt.Getopt(nil)
+	if err != nil {
+		fmt.Println(help())
+		os.Exit(0)
+	}
 	if *helpFlag {
 		fmt.Print(help())
 	}
