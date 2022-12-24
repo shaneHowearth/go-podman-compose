@@ -16,6 +16,18 @@ func main() {
 	profileName := getopt.StringLong("profile", 0, "")
 	verboseFlag := getopt.BoolLong("verbose", 0, "")
 	logLevel := getopt.StringLong("log-level", 0, "")
+	noANSI := getopt.StringLong("no-ansi", 0, "")
+	version := getopt.BoolLong("version", 'v', "")
+	host := getopt.StringLong("host", 'H', "")
+	tlsFlag := getopt.BoolLong("tls", 0, "")
+	tlsCACert := getopt.StringLong("tlscacert", 0, "")
+	tlsCert := getopt.StringLong("tlscert", 0, "")
+	tlsKey := getopt.StringLong("tlskey", 0, "")
+	tlsVerifyFlag := getopt.BoolLong("tlsverify", 0, "")
+	skipHostname := getopt.BoolLong("skip-hostname-check", 0, "")
+	projectDirectory := getopt.StringLong("project-directory", 0, "")
+	compatibilityFlag := getopt.BoolLong("compatibility", 0, "")
+
 	err := getopt.Getopt(nil)
 	if err != nil {
 		fmt.Println(help())
