@@ -1,3 +1,5 @@
-module github.com/shanehowearth/go_podman_compose
+module github.com/shanehowearth/go-podman-compose
 
 go 1.18
+
+require github.com/pborman/getopt/v2 v2.1.0
