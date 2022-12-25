@@ -9,14 +9,36 @@ import (
 	"github.com/pborman/getopt/v2"
 )
 
+// Input - received from user
+type Input struct {
+	Files         []string
+	Project       string
+	Profile       string
+	Verbose       bool
+	LogLevel      string
+	Ansi          bool
+	Version       bool
+	Host          string
+	Tls           bool
+	TlsCACert     string
+	TlsCert       string
+	TlsKey        string
+	TlsVerify     bool
+	SkipHostname  bool
+	ProjectDir    string
+	Compatibility bool
+	Args          []string
+}
+
 func main() {
+	// Create flags for input
 	helpFlag := getopt.BoolLong("help", 'h', "display help")
 	files := getopt.ListLong("file", 'f', "")
 	projectName := getopt.StringLong("project-name", 'p', "")
 	profileName := getopt.StringLong("profile", 0, "")
 	verboseFlag := getopt.BoolLong("verbose", 0, "")
 	logLevel := getopt.StringLong("log-level", 0, "")
-	noANSI := getopt.StringLong("no-ansi", 0, "")
+	noANSI := getopt.BoolLong("no-ansi", 0, "")
 	version := getopt.BoolLong("version", 'v', "")
 	host := getopt.StringLong("host", 'H', "")
 	tlsFlag := getopt.BoolLong("tls", 0, "")
@@ -30,31 +52,35 @@ func main() {
 
 	err := getopt.Getopt(nil)
 	if err != nil {
+		// Assume a bad flag has been passed in.
 		fmt.Println(help())
 		os.Exit(0)
 	}
 
 	if *helpFlag {
 		fmt.Print(help())
+		os.Exit(0)
 	}
 
+	// Sanitise input.
+
 	if len(*files) == 0 {
-		// default
+		// set default if nothing supplied.
 		*files = []string{"docker-compose.yml"}
 	}
 
 	if *projectName == "" {
-		// default
+		// default project name is the current directory if nothing supplied.
 		dir, err := os.Getwd()
 		if err != nil {
 			log.Fatal(err)
 		}
-		// Note: Could use strings.TrimSuffix here, but converting to []rune and
-		// back isn't expensive IMO
+
 		dirRune := []rune(dir)
 		if dirRune[len(dirRune)-1] == os.PathSeparator {
 			dir = string(dirRune[:len(dirRune)-1])
 		}
+
 		dirs := strings.Split(dir, string(os.PathSeparator))
 		*projectName = dirs[len(dirs)-1]
 	}
@@ -62,6 +88,27 @@ func main() {
 	if *logLevel != "" && strings.ToUpper(*logLevel) != "DEBUG" && strings.ToUpper(*logLevel) != "INFO" && strings.ToUpper(*logLevel) != "WARNING" && strings.ToUpper(*logLevel) != "ERROR" && strings.ToUpper(*logLevel) != "CRITICAL" {
 		fmt.Println(help())
 		os.Exit(0)
+	}
+
+	// Collate input into a structure that can be passed around.
+	input := Input{
+		files:         *files,
+		project:       *projectName,
+		profile:       *profileName,
+		verbose:       *verboseFlag,
+		logLevel:      *logLevel,
+		ansi:          *noANSI,
+		version:       *version,
+		host:          *host,
+		tls:           *tlsFlag,
+		tlsCACert:     *tlsCACert,
+		tlsCert:       *tlsCert,
+		tlsKey:        *tlsKey,
+		tlsVerify:     *tlsVerifyFlag,
+		skipHostname:  *skipHostname,
+		projectDir:    *projectDirectory,
+		compatibility: *compatibilityFlag,
+		args:          getopt.Args(),
 	}
 }
 
