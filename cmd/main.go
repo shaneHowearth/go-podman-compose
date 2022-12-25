@@ -7,28 +7,8 @@ import (
 	"strings"
 
 	"github.com/pborman/getopt/v2"
+	podmancomposer "github.com/shanehowearth/go-podman-compose"
 )
-
-// Input - received from user
-type Input struct {
-	Files         []string
-	Project       string
-	Profile       string
-	Verbose       bool
-	LogLevel      string
-	Ansi          bool
-	Version       bool
-	Host          string
-	Tls           bool
-	TlsCACert     string
-	TlsCert       string
-	TlsKey        string
-	TlsVerify     bool
-	SkipHostname  bool
-	ProjectDir    string
-	Compatibility bool
-	Args          []string
-}
 
 func main() {
 	// Create flags for input
@@ -91,24 +71,24 @@ func main() {
 	}
 
 	// Collate input into a structure that can be passed around.
-	input := Input{
-		files:         *files,
-		project:       *projectName,
-		profile:       *profileName,
-		verbose:       *verboseFlag,
-		logLevel:      *logLevel,
-		ansi:          *noANSI,
-		version:       *version,
-		host:          *host,
-		tls:           *tlsFlag,
-		tlsCACert:     *tlsCACert,
-		tlsCert:       *tlsCert,
-		tlsKey:        *tlsKey,
-		tlsVerify:     *tlsVerifyFlag,
-		skipHostname:  *skipHostname,
-		projectDir:    *projectDirectory,
-		compatibility: *compatibilityFlag,
-		args:          getopt.Args(),
+	input := podmancomposer.Input{
+		Files:         *files,
+		Project:       *projectName,
+		Profile:       *profileName,
+		Verbose:       *verboseFlag,
+		LogLevel:      *logLevel,
+		Ansi:          *noANSI,
+		Version:       *version,
+		Host:          *host,
+		Tls:           *tlsFlag,
+		TlsCACert:     *tlsCACert,
+		TlsCert:       *tlsCert,
+		TlsKey:        *tlsKey,
+		TlsVerify:     *tlsVerifyFlag,
+		SkipHostname:  *skipHostname,
+		ProjectDir:    *projectDirectory,
+		Compatibility: *compatibilityFlag,
+		Args:          getopt.Args(),
 	}
 }
 
