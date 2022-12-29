@@ -525,8 +525,6 @@ func Test_Deploy(t *testing.T) {
 			err := yaml.Unmarshal([]byte(tc.input), &output)
 			if tc.err == nil {
 				assert.Nil(t, err, "got an unexpected error %v", err)
-				// fmt.Printf("Expected: %#v", tc.expected)
-				// fmt.Printf("Output: %#v", output)
 				assert.Equal(t, tc.expected, output)
 			} else {
 				assert.NotNil(t, err)
@@ -535,7 +533,6 @@ func Test_Deploy(t *testing.T) {
 	}
 }
 
-/*
 func Test_Build(t *testing.T) {
 	testcases := map[string]struct {
 		input    string
@@ -549,66 +546,418 @@ func Test_Build(t *testing.T) {
       build:
         context: .
         dockerfile: webapp.Dockerfile`,
-			expected: podmancomposer.Compose{},
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context:    ".",
+						Dockerfile: "webapp.Dockerfile",
+					},
+				},
+				},
+			},
 		},
 		"Build args map": {
 			input: `services:
-  frontend:
-      image: awesome/webapp
-      build:
-        context: .
-        args:
-          GIT_COMMIT: cdc3b19`,
-			expected: podmancomposer.Compose{},
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           args:
+             GIT_COMMIT: cdc3b19`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context: ".",
+						Args:    map[interface{}]interface{}{"GIT_COMMIT": "cdc3b19"},
+					},
+				},
+				},
+			},
 		},
 		"Build args list": {
 			input: `services:
-  frontend:
-      image: awesome/webapp
-      build:
-        context: .
-        args:
-          - GIT_COMMIT=cdc3b19`,
-			expected: podmancomposer.Compose{},
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           args:
+             - GIT_COMMIT=cdc3b19`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context: ".",
+						Args:    []interface{}{"GIT_COMMIT=cdc3b19"},
+					},
+				},
+				},
+			},
 		},
 		"Build args list no val": {
 			input: `services:
-  frontend:
-      image: awesome/webapp
-      build:
-        context: .
-        args:
-          - GIT_COMMIT`,
-			expected: podmancomposer.Compose{},
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           args:
+             - GIT_COMMIT`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context: ".",
+						Args:    []interface{}{"GIT_COMMIT"},
+					},
+				},
+				},
+			},
 		},
 		"Build ssh list": {
 			input: `services:
-  frontend:
-      image: awesome/webapp
-      build:
-        context: .
-        ssh:
-          - default`,
-			expected: podmancomposer.Compose{},
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           ssh:
+             - default`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context: ".",
+						SSH:     []string{"default"},
+					},
+				},
+				},
+			},
 		},
 		"Build ssh": {
 			input: `services:
-  frontend:
-      image: awesome/webapp
-      build:
-        context: .
-        ssh: ["default"]`,
-			expected: podmancomposer.Compose{},
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           ssh: ["default"]`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context: ".",
+						SSH:     []string{"default"},
+					},
+				},
+				},
+			},
 		},
 		"Build ssh custom id": {
 			input: `services:
-  frontend:
-      image: awesome/webapp
-      build:
-        context: .
-        ssh:
-          - myproject=~/.ssh/myproject.pem`,
-			expected: podmancomposer.Compose{},
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           ssh:
+             - myproject=~/.ssh/myproject.pem`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context: ".",
+						SSH:     []string{"myproject=~/.ssh/myproject.pem"},
+					},
+				},
+				},
+			},
+		},
+		"Build cache from": {
+			input: `services:
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           cache_from:
+             - alpine:latest
+             - type=local,src=path/to/cache
+             - type=gha`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context:   ".",
+						CacheFrom: []string{"alpine:latest", "type=local,src=path/to/cache", "type=gha"},
+					},
+				},
+				},
+			},
+		},
+		"Build cache to": {
+			input: `services:
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           cache_to:
+             - user/app:cache
+             - type=local,src=path/to/cache`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context: ".",
+						CacheTo: []string{"user/app:cache", "type=local,src=path/to/cache"},
+					},
+				},
+				},
+			},
+		},
+		"Build extra hosts": {
+			input: `services:
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           extra_hosts:
+             - "somehost:162.242.195.82"
+             - "otherhost:50.31.209.229"`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context:    ".",
+						ExtraHosts: []string{"somehost:162.242.195.82", "otherhost:50.31.209.229"},
+					},
+				},
+				},
+			},
+		},
+		"Build isolation": {
+			input: `services:
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           isolation:
+             - stuff`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context:   ".",
+						Isolation: []string{"stuff"},
+					},
+				},
+				},
+			},
+		},
+		"Build privileged": {
+			input: `services:
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           privileged: true`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context:    ".",
+						Privileged: true,
+					},
+				},
+				},
+			},
+		},
+		"Build labels map": {
+			input: `services:
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           labels:
+             com.example.description: "Accounting webapp"
+             com.example.department: "Finance"
+             com.example.label-with-empty-value: ""`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context: ".",
+						Labels:  map[interface{}]interface{}{"com.example.description": "Accounting webapp", "com.example.department": "Finance", "com.example.label-with-empty-value": ""},
+					},
+				},
+				},
+			},
+		},
+		"Build labels list": {
+			input: `services:
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           labels:
+             - "com.example.description=Accounting webapp"
+             - "com.example.department=Finance"
+             - "com.example.label-with-empty-value"`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context: ".",
+						Labels:  []interface{}{"com.example.description=Accounting webapp", "com.example.department=Finance", "com.example.label-with-empty-value"},
+					},
+				},
+				},
+			},
+		},
+		"Build no_cache": {
+			input: `services:
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           no_cache: true`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context: ".",
+						NoCache: true},
+				},
+				},
+			},
+		},
+		"Build pull": {
+			input: `services:
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           pull: true`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context: ".",
+						Pull:    true},
+				},
+				},
+			},
+		},
+		"Build shm size string": {
+			input: `services:
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           shm_size: 2gb`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context: ".",
+						ShmSize: "2gb"},
+				},
+				},
+			},
+		},
+		"Build shm size int": {
+			input: `services:
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           shm_size: 10000000`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context: ".",
+						ShmSize: 10000000},
+				},
+				},
+			},
+		},
+		"Build target": {
+			input: `services:
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           target: prod`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context: ".",
+						Target:  "prod"},
+				},
+				},
+			},
+		},
+		"Build secrets short syntax": {
+			input: `services:
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           secrets:
+             - server-certificate
+secrets:
+  server-certificate:
+      file: ./server.cert`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context: ".",
+						Secrets: []podmancomposer.MapOrListOfString{"server-certificate"},
+					},
+				},
+				},
+				Secrets: map[string]podmancomposer.Secret{
+					"server-certificate": {
+						File: "./server.cert",
+					},
+				},
+			},
+		},
+		"Build secrets long syntax": {
+			input: `services:
+     frontend:
+         image: awesome/webapp
+         build:
+           context: .
+           secrets:
+             - source: server-certificate
+               target: server.cert
+               uid: "103"
+               gid: "103"
+               mode: 0440
+secrets:
+  server-certificate:
+      external: true`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Build: podmancomposer.Build{
+						Context: ".",
+						Secrets: []podmancomposer.MapOrListOfString{map[interface{}]interface{}{
+							"source": "server-certificate",
+							"target": "server.cert",
+							"uid":    "103",
+							"gid":    "103",
+							"mode":   0440,
+						}},
+					},
+				},
+				},
+				Secrets: map[string]podmancomposer.Secret{
+					"server-certificate": {
+						External: true,
+					},
+				},
+			},
 		},
 	}
 	for name, tc := range testcases {
@@ -618,12 +967,11 @@ func Test_Build(t *testing.T) {
 				err := yaml.Unmarshal([]byte(tc.input), &output)
 				if tc.err == nil {
 					assert.Nil(t, err, "got an unexpected error %v", err)
+					assert.Equal(t, tc.expected, output)
 				} else {
 					assert.NotNil(t, err)
 				}
 			})
-
 		})
 	}
 }
-*/

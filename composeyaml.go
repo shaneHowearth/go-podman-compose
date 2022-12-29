@@ -67,25 +67,25 @@ type BuildSecret struct {
 }
 
 type Build struct {
-	Context    string            `yaml:"context"`
-	Dockerfile string            `yaml:"dockerfile,omitempty"`
-	Args       map[string]string `yaml:"args,omitempty"`
-	SSH        []string          `yaml:"ssh,omitempty"`
-	CacheFrom  []string          `yaml:"cache_from,omitempty"`
-	CacheTo    []string          `yaml:"cache_to,omitempty"`
-	ExtraHosts []string          `yaml:"extra_hosts,omitempty"`
-	Isolation  []string          `yaml:"isolation,omitempty"`
-	Privileged bool              `yaml:"privileged,omitempty"`
-	Labels     []string          `yaml:"labels,omitempty"`
-	NoCache    bool              `yaml:"no_cache,omitempty"`
-	Pull       bool              `yaml:"pull,omitempty"`
-	ShmSize    StringOrInt       `yaml:"shm_size"`
-	Target     string            `yaml:"target,omitempty"`
-	Secrets    []BuildSecret     `yaml:"secrets,omitempty"`
-	Tags       []string          `yaml:"tags,omitempty"`
-	Platforms  []string          `yaml:"platforms,omitempty"`
-	Networks   []string          `yaml:"networks,omitempty"`
-	Volumes    []string          `yaml:"volumes,omitempty"`
+	Context    string              `yaml:"context"`
+	Dockerfile string              `yaml:"dockerfile,omitempty"`
+	Args       MapOrListOfString   `yaml:"args,omitempty"`
+	SSH        []string            `yaml:"ssh,omitempty"`
+	CacheFrom  []string            `yaml:"cache_from,omitempty"`  // [NAME|type=TYPE[,KEY=VALUE]].
+	CacheTo    []string            `yaml:"cache_to,omitempty"`    // [NAME|type=TYPE[,KEY=VALUE]].
+	ExtraHosts []string            `yaml:"extra_hosts,omitempty"` // Compose implementations MUST create matching entry with the IP address and hostname in the container's network configuration.
+	Isolation  []string            `yaml:"isolation,omitempty"`
+	Privileged bool                `yaml:"privileged,omitempty"`
+	Labels     MapOrListOfString   `yaml:"labels,omitempty"`
+	NoCache    bool                `yaml:"no_cache,omitempty"`
+	Pull       bool                `yaml:"pull,omitempty"`
+	ShmSize    StringOrInt         `yaml:"shm_size"`
+	Target     string              `yaml:"target,omitempty"`
+	Secrets    []MapOrListOfString `yaml:"secrets,omitempty"`
+	Tags       []string            `yaml:"tags,omitempty"`
+	Platforms  []string            `yaml:"platforms,omitempty"`
+	Networks   []string            `yaml:"networks,omitempty"`
+	Volumes    []string            `yaml:"volumes,omitempty"`
 }
 
 type Service struct {
@@ -138,10 +138,10 @@ type Config struct {
 }
 
 type Secret struct {
-	File        string `yaml:"file"`
-	Environment string `yaml:"environment"`
-	External    bool   `yaml:"external"`
-	Name        string `yaml:"name"`
+	File        string `yaml:"file,omitempty"`
+	Environment string `yaml:"environment,omitempty"`
+	External    bool   `yaml:"external,omitempty"`
+	Name        string `yaml:"name,omitempty"`
 }
 
 type Compose struct {
@@ -150,5 +150,5 @@ type Compose struct {
 	Networks []Network          `yaml:"networks,omitempty"`
 	Volumes  []Volume           `yaml:"volumes,omitempty"`
 	Configs  []Config           `yaml:"configs,omitempty"`
-	Secrets  []Secret           `yaml:"secrets,omitempty"`
+	Secrets  map[string]Secret  `yaml:"secrets,omitempty"`
 }
