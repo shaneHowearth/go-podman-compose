@@ -95,28 +95,8 @@ func Test_Deploy(t *testing.T) {
 				Services: map[string]podmancomposer.Service{"frontend": {
 					Image: "awesome/webapp",
 					Ports: []interface{}{"8080:80"},
-					Deploy: struct {
-						EndpointMode string            `yaml:"endpoint_mode,omitempty"`
-						Labels       map[string]string `yaml:"labels,omitempty"`
-						Mode         string            `yaml:"mode,omitempty"`
-						Placement    struct {
-							Constraints podmancomposer.MapOrListOfString `yaml:"constraints,omitempty"`
-							Preferences podmancomposer.MapOrListOfString `yaml:"preferences,omitempty"`
-						} `yaml:"placement,omitempty"`
-						Replicas  int32 `yaml:"replicas,omitempty"`
-						Resources struct {
-							Limits       podmancomposer.Resources `yaml:"limits,omitempty"`
-							Reservations podmancomposer.Resources `yaml:"reservations,omitempty"`
-						} `yaml:"resources,omitempty"`
-						RestartPolicy struct {
-							Condition   string        `yaml:"condition,omitempty"`
-							Delay       time.Duration `yaml:"delay,omitempty"`
-							MaxAttempts int           `yaml:"max_attempts,omitempty"`
-							Window      time.Duration `yaml:"window,omitempty"`
-						} `yaml:"restart_policy,omitempty"`
-						RollbackConfig podmancomposer.DeployConfig `yaml:"rollback_config,omitempty"`
-						UpdateConfig   podmancomposer.DeployConfig `yaml:"update_config,omitempty"`
-					}{
+					Deploy: podmancomposer.Deploy{
+						// }{
 						Mode:         "replicated",
 						EndpointMode: "vip",
 						Replicas:     2,
@@ -135,28 +115,7 @@ func Test_Deploy(t *testing.T) {
 			expected: podmancomposer.Compose{
 				Services: map[string]podmancomposer.Service{"frontend": {
 					Image: "awesome/webapp",
-					Deploy: struct {
-						EndpointMode string            `yaml:"endpoint_mode,omitempty"`
-						Labels       map[string]string `yaml:"labels,omitempty"`
-						Mode         string            `yaml:"mode,omitempty"`
-						Placement    struct {
-							Constraints podmancomposer.MapOrListOfString `yaml:"constraints,omitempty"`
-							Preferences podmancomposer.MapOrListOfString `yaml:"preferences,omitempty"`
-						} `yaml:"placement,omitempty"`
-						Replicas  int32 `yaml:"replicas,omitempty"`
-						Resources struct {
-							Limits       podmancomposer.Resources `yaml:"limits,omitempty"`
-							Reservations podmancomposer.Resources `yaml:"reservations,omitempty"`
-						} `yaml:"resources,omitempty"`
-						RestartPolicy struct {
-							Condition   string        `yaml:"condition,omitempty"`
-							Delay       time.Duration `yaml:"delay,omitempty"`
-							MaxAttempts int           `yaml:"max_attempts,omitempty"`
-							Window      time.Duration `yaml:"window,omitempty"`
-						} `yaml:"restart_policy,omitempty"`
-						RollbackConfig podmancomposer.DeployConfig `yaml:"rollback_config,omitempty"`
-						UpdateConfig   podmancomposer.DeployConfig `yaml:"update_config,omitempty"`
-					}{
+					Deploy: podmancomposer.Deploy{
 						Labels: map[string]string{"com.example.description": "This label will appear on the web service"},
 					},
 				},
@@ -172,28 +131,7 @@ func Test_Deploy(t *testing.T) {
 			expected: podmancomposer.Compose{
 				Services: map[string]podmancomposer.Service{"frontend": {
 					Image: "awesome/webapp",
-					Deploy: struct {
-						EndpointMode string            `yaml:"endpoint_mode,omitempty"`
-						Labels       map[string]string `yaml:"labels,omitempty"`
-						Mode         string            `yaml:"mode,omitempty"`
-						Placement    struct {
-							Constraints podmancomposer.MapOrListOfString `yaml:"constraints,omitempty"`
-							Preferences podmancomposer.MapOrListOfString `yaml:"preferences,omitempty"`
-						} `yaml:"placement,omitempty"`
-						Replicas  int32 `yaml:"replicas,omitempty"`
-						Resources struct {
-							Limits       podmancomposer.Resources `yaml:"limits,omitempty"`
-							Reservations podmancomposer.Resources `yaml:"reservations,omitempty"`
-						} `yaml:"resources,omitempty"`
-						RestartPolicy struct {
-							Condition   string        `yaml:"condition,omitempty"`
-							Delay       time.Duration `yaml:"delay,omitempty"`
-							MaxAttempts int           `yaml:"max_attempts,omitempty"`
-							Window      time.Duration `yaml:"window,omitempty"`
-						} `yaml:"restart_policy,omitempty"`
-						RollbackConfig podmancomposer.DeployConfig `yaml:"rollback_config,omitempty"`
-						UpdateConfig   podmancomposer.DeployConfig `yaml:"update_config,omitempty"`
-					}{
+					Deploy: podmancomposer.Deploy{
 						Mode: "global",
 					},
 				},
@@ -211,206 +149,375 @@ func Test_Deploy(t *testing.T) {
 			expected: podmancomposer.Compose{
 				Services: map[string]podmancomposer.Service{"frontend": {
 					Image: "awesome/webapp",
-					Deploy: struct {
-						EndpointMode string            `yaml:"endpoint_mode,omitempty"`
-						Labels       map[string]string `yaml:"labels,omitempty"`
-						Mode         string            `yaml:"mode,omitempty"`
-						Placement    struct {
-							Constraints podmancomposer.MapOrListOfString `yaml:"constraints,omitempty"`
-							Preferences podmancomposer.MapOrListOfString `yaml:"preferences,omitempty"`
-						} `yaml:"placement,omitempty"`
-						Replicas  int32 `yaml:"replicas,omitempty"`
-						Resources struct {
-							Limits       podmancomposer.Resources `yaml:"limits,omitempty"`
-							Reservations podmancomposer.Resources `yaml:"reservations,omitempty"`
-						} `yaml:"resources,omitempty"`
-						RestartPolicy struct {
-							Condition   string        `yaml:"condition,omitempty"`
-							Delay       time.Duration `yaml:"delay,omitempty"`
-							MaxAttempts int           `yaml:"max_attempts,omitempty"`
-							Window      time.Duration `yaml:"window,omitempty"`
-						} `yaml:"restart_policy,omitempty"`
-						RollbackConfig podmancomposer.DeployConfig `yaml:"rollback_config,omitempty"`
-						UpdateConfig   podmancomposer.DeployConfig `yaml:"update_config,omitempty"`
-					}{
-						Placement: struct {
-							Constraints podmancomposer.MapOrListOfString `yaml:"constraints,omitempty"`
-							Preferences podmancomposer.MapOrListOfString `yaml:"preferences,omitempty"`
-						}{Constraints: []interface{}{"disktype=ssd"}},
+					Deploy: podmancomposer.Deploy{
+						Placement: podmancomposer.DeployPlacement{
+							Constraints: []interface{}{"disktype=ssd"}},
 					},
 				},
 				},
 			},
 		},
-		/*
-					"deploy placement constraints map": {
-						input: `services:
-			  frontend:
-			    image: awesome/webapp
-			    deploy:
-			    placement:
-			      constraints:
-			        disktype: ssd`,
-						expected: podmancomposer.Compose{},
+		"deploy placement constraints map": {
+			input: `services:
+  frontend:
+    image: awesome/webapp
+    deploy:
+      placement:
+        constraints:
+          disktype: ssd`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Deploy: podmancomposer.Deploy{
+						Placement: podmancomposer.DeployPlacement{
+							Constraints: map[interface{}]interface{}{"disktype": "ssd"}},
 					},
-					"deploy preferences list": {
-						input: `services:
-			  frontend:
-			    image: awesome/webapp
-			    deploy:
-			    placement:
-			      preferences:
-			        - datacenter=us-east`,
-						expected: podmancomposer.Compose{},
+				},
+				},
+			},
+		},
+		"deploy preferences list": {
+			input: `services:
+  frontend:
+    image: awesome/webapp
+    deploy:
+      placement:
+        preferences:
+          - datacenter=us-east`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Deploy: podmancomposer.Deploy{
+						Placement: podmancomposer.DeployPlacement{
+							Preferences: []interface{}{"datacenter=us-east"}},
 					},
-					"deploy preferences map": {
-						input: `services:
-			  frontend:
-			    image: awesome/webapp
-			    deploy:
-			    placement:
-			      preferences:
-			        datacenter: us-east`,
-						expected: podmancomposer.Compose{},
+				},
+				},
+			},
+		},
+		"deploy preferences map": {
+			input: `services:
+  frontend:
+    image: awesome/webapp
+    deploy:
+      placement:
+        preferences:
+          datacenter: us-east`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Deploy: podmancomposer.Deploy{
+						Placement: podmancomposer.DeployPlacement{
+							Preferences: map[interface{}]interface{}{"datacenter": "us-east"},
+						},
 					},
-					"deploy replicas": {
-						input: `services:
-			  fronted:
-			    image: awesome/webapp
-			    deploy:
-			      mode: replicated
-			      replicas: 6`,
-						expected: podmancomposer.Compose{},
+				},
+				},
+			},
+		},
+		"deploy replicas": {
+			input: `services:
+  frontend:
+    image: awesome/webapp
+    deploy:
+      mode: replicated
+      replicas: 6`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Deploy: podmancomposer.Deploy{
+						Mode:     "replicated",
+						Replicas: 6,
 					},
-					"deploy resources": {
-						input: `services:
-			  frontend:
-			    image: awesome/webapp
-			    deploy:
-			      resources:
-			      limits:
-			        cpus: '0.50'
-			        memory: 50M
-			        pids: 1
-			      reservations:
-			        cpus: '0.25'
-			        memory: 20M`,
-						expected: podmancomposer.Compose{},
+				},
+				},
+			},
+		},
+		"deploy resources": {
+			input: `services:
+  frontend:
+    image: awesome/webapp
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 50M
+          pids: 1
+        reservations:
+          cpus: '0.25'
+          memory: 20M`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Deploy: podmancomposer.Deploy{
+						Resources: podmancomposer.DeployResources{
+							Limits: podmancomposer.Resources{
+								CPUs:   "0.50",
+								Memory: "50M",
+								PIDs:   1,
+							},
+							Reservations: podmancomposer.Resources{
+								CPUs:   "0.25",
+								Memory: "20M",
+							},
+						},
 					},
-					"deploy resources reservations capabilities": {
-						input: `services:
-			  frontend:
-			    image: awesome/webapp
-			    deploy:
-			      resources:
-			        reservations:
-			          devices:
-			            - capabilities: ["nvidia-compute"]`,
-						expected: podmancomposer.Compose{},
+				},
+				},
+			},
+		},
+		"deploy resources reservations capabilities": {
+			input: `services:
+  frontend:
+    image: awesome/webapp
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: ["nvidia-compute"]`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Deploy: podmancomposer.Deploy{
+						Resources: podmancomposer.DeployResources{
+							Reservations: podmancomposer.Resources{
+								Devices: []podmancomposer.ResourceDevice{{
+									Capabilities: []interface{}{"nvidia-compute"},
+								},
+								},
+							},
+						},
 					},
-					"deploy resources reservations devices driver": {
-						input: `services:
-			  frontend:
-			    image: awesome/webapp
-			    deploy:
-			      resources:
-			        reservations:
-			          devices:
-			          - capabilities: ["nvidia-compute"]
-			            driver: nvidia`,
-						expected: podmancomposer.Compose{},
+				},
+				},
+			},
+		},
+		"deploy resources reservations devices driver": {
+			input: `services:
+  frontend:
+    image: awesome/webapp
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: ["nvidia-compute"]
+              driver: nvidia`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Deploy: podmancomposer.Deploy{
+						Resources: podmancomposer.DeployResources{
+							Reservations: podmancomposer.Resources{
+								Devices: []podmancomposer.ResourceDevice{{
+									Capabilities: []interface{}{"nvidia-compute"},
+									Driver:       "nvidia",
+								},
+								},
+							},
+						},
 					},
-					"deploy resources reservations devices count int ": {
-						input: `services:
-			  frontend:
-			    image: awesome/webapp
-			    deploy:
-			      resources:
-			        reservations:
-			          devices:
-			          - capabilities: ["nvidia-compute"]
-			            count: 2`,
-						expected: podmancomposer.Compose{},
+				},
+				},
+			},
+		},
+		"deploy resources reservations devices count int ": {
+			input: `services:
+  frontend:
+    image: awesome/webapp
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - capabilities: ["nvidia-compute"]
+            count: 2`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Deploy: podmancomposer.Deploy{
+						Resources: podmancomposer.DeployResources{
+							Reservations: podmancomposer.Resources{
+								Devices: []podmancomposer.ResourceDevice{{
+									Capabilities: []interface{}{"nvidia-compute"},
+									Count:        2,
+								},
+								},
+							},
+						},
 					},
-					"deploy resources reservations devices count string ": {
-						input: `services:
-			  frontend:
-			    image: awesome/webapp
-			    deploy:
-			      resources:
-			        reservations:
-			          devices:
-			          - capabilities: ["nvidia-compute"]
-			            count: all`,
-						expected: podmancomposer.Compose{},
+				},
+				},
+			},
+		},
+		"deploy resources reservations devices count string ": {
+			input: `services:
+  frontend:
+    image: awesome/webapp
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - capabilities: ["nvidia-compute"]
+            count: all`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Deploy: podmancomposer.Deploy{
+						Resources: podmancomposer.DeployResources{
+							Reservations: podmancomposer.Resources{
+								Devices: []podmancomposer.ResourceDevice{{
+									Capabilities: []interface{}{"nvidia-compute"},
+									Count:        "all",
+								},
+								},
+							},
+						},
 					},
-					"deploy resources reservations devices device_ids": {
-						input: `services:
-			  frontend:
-			    image: awesome/webapp
-			    deploy:
-			      resources:
-			        reservations:
-			          devices:
-			          - capabilities: ["gpu"]
-			            device_ids: ["GPU-f123d1c9-26bb-df9b-1c23-4a731f61d8c7"]`,
-						expected: podmancomposer.Compose{},
+				},
+				},
+			},
+		},
+		"deploy resources reservations devices device_ids": {
+			input: `services:
+  frontend:
+    image: awesome/webapp
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - capabilities: ["gpu"]
+            device_ids: ["GPU-f123d1c9-26bb-df9b-1c23-4a731f61d8c7", "second"]`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Deploy: podmancomposer.Deploy{
+						Resources: podmancomposer.DeployResources{
+							Reservations: podmancomposer.Resources{
+								Devices: []podmancomposer.ResourceDevice{{
+									Capabilities: []interface{}{"gpu"},
+									DeviceIDs:    []string{"GPU-f123d1c9-26bb-df9b-1c23-4a731f61d8c7", "second"},
+								},
+								},
+							},
+						},
 					},
-					"deploy resources reservations devices options": {
-						input: `services:
-			  frontend:
-			    image: awesome/webapp
-			    deploy:
-			      resources:
-			        reservations:
-			          devices:
-			          - capabilities: ["gpu"]
-			            driver: gpuvendor
-			            options:
-			              virtualization: false`,
-						expected: podmancomposer.Compose{},
+				},
+				},
+			},
+		},
+		"deploy resources reservations devices options": {
+			input: `services:
+  frontend:
+    image: awesome/webapp
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - capabilities: ["gpu"]
+            driver: gpuvendor
+            options:
+              virtualization: false`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Deploy: podmancomposer.Deploy{
+						Resources: podmancomposer.DeployResources{
+							Reservations: podmancomposer.Resources{
+								Devices: []podmancomposer.ResourceDevice{{
+									Capabilities: []interface{}{"gpu"},
+									Driver:       "gpuvendor",
+									Options:      map[string]string{"virtualization": "false"},
+								},
+								},
+							},
+						},
 					},
-					"deploy restart policy": {
-						input: `services:
-			  frontend:
-			    image: awesome/webapp
-			    deploy:
-			      restart_policy:
-			        condition: on-failure
-			        delay: 5s
-			        max_attempts: 3
-			        window: 120s`,
-						expected: podmancomposer.Compose{},
+				},
+				},
+			},
+		},
+		"deploy restart policy": {
+			input: `services:
+  frontend:
+    image: awesome/webapp
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Deploy: podmancomposer.Deploy{
+						RestartPolicy: podmancomposer.DeployRestartPolicy{
+							Condition:   "on-failure",
+							Delay:       time.Duration(5 * time.Second),
+							MaxAttempts: 3,
+							Window:      time.Duration(120 * time.Second),
+						},
 					},
-					"deploy rollback config": {
-						input: `services:
-			  frontend:
-			    image: awesome/webapp
-			    deploy:
-			      rollback_config:
-			        parallelism: 0
-			        delay: 0
-			        failure_action: pause
-			        monitor: 1m
-			        max_failure_rate: 0
-			        order: stop-first`,
-						expected: podmancomposer.Compose{},
+				},
+				},
+			},
+		},
+		"deploy rollback config": {
+			input: `services:
+  frontend:
+    image: awesome/webapp
+    deploy:
+      rollback_config:
+        parallelism: 0
+        delay: 0
+        failure_action: pause
+        monitor: 1m
+        max_failure_rate: 0
+        order: stop-first`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Deploy: podmancomposer.Deploy{
+						RollbackConfig: podmancomposer.DeployConfig{
+							Parallelism:     0,
+							Delay:           0,
+							FailureAction:   "pause",
+							Monitor:         time.Duration(1 * time.Minute),
+							MaxFailureRatio: 0,
+							Order:           "stop-first",
+						},
 					},
-					"update rollback config": {
-						input: `services:
-			  frontend:
-			    image: awesome/webapp
-			    deploy:
-			      update_config:
-			        parallelism: 0
-			        delay: 0
-			        failure_action: pause
-			        monitor: 1m
-			        max_failure_rate: 0
-			        order: stop-first`,
-						expected: podmancomposer.Compose{},
+				},
+				},
+			},
+		},
+		"update rollback config": {
+			input: `services:
+  frontend:
+    image: awesome/webapp
+    deploy:
+      update_config:
+        parallelism: 0
+        delay: 0
+        failure_action: pause
+        monitor: 1m
+        max_failure_rate: 0
+        order: stop-first`,
+			expected: podmancomposer.Compose{
+				Services: map[string]podmancomposer.Service{"frontend": {
+					Image: "awesome/webapp",
+					Deploy: podmancomposer.Deploy{
+						UpdateConfig: podmancomposer.DeployConfig{
+							Parallelism:     0,
+							Delay:           0,
+							FailureAction:   "pause",
+							Monitor:         time.Duration(1 * time.Minute),
+							MaxFailureRatio: 0,
+							Order:           "stop-first",
+						},
 					},
-		*/
+				},
+				},
+			},
+		},
 	}
 	for name, tc := range testcases {
 		t.Run(name, func(t *testing.T) {
@@ -418,6 +525,8 @@ func Test_Deploy(t *testing.T) {
 			err := yaml.Unmarshal([]byte(tc.input), &output)
 			if tc.err == nil {
 				assert.Nil(t, err, "got an unexpected error %v", err)
+				// fmt.Printf("Expected: %#v", tc.expected)
+				// fmt.Printf("Output: %#v", output)
 				assert.Equal(t, tc.expected, output)
 			} else {
 				assert.NotNil(t, err)
