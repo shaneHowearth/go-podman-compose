@@ -65,7 +65,12 @@ func main() {
 		*projectName = dirs[len(dirs)-1]
 	}
 
-	if *logLevel != "" && strings.ToUpper(*logLevel) != "DEBUG" && strings.ToUpper(*logLevel) != "INFO" && strings.ToUpper(*logLevel) != "WARNING" && strings.ToUpper(*logLevel) != "ERROR" && strings.ToUpper(*logLevel) != "CRITICAL" {
+	if *logLevel != "" && strings.ToUpper(*logLevel) != "DEBUG" &&
+		strings.ToUpper(*logLevel) != "INFO" &&
+		strings.ToUpper(*logLevel) != "WARNING" &&
+		strings.ToUpper(*logLevel) != "ERROR" &&
+		strings.ToUpper(*logLevel) != "CRITICAL" { //nolint:wsl
+
 		fmt.Println(help())
 		os.Exit(0)
 	}
@@ -80,15 +85,19 @@ func main() {
 		Ansi:          *noANSI,
 		Version:       *version,
 		Host:          *host,
-		Tls:           *tlsFlag,
-		TlsCACert:     *tlsCACert,
-		TlsCert:       *tlsCert,
-		TlsKey:        *tlsKey,
-		TlsVerify:     *tlsVerifyFlag,
+		TLS:           *tlsFlag,
+		TLSCACert:     *tlsCACert,
+		TLSCert:       *tlsCert,
+		TLSKey:        *tlsKey,
+		TLSVerify:     *tlsVerifyFlag,
 		SkipHostname:  *skipHostname,
 		ProjectDir:    *projectDirectory,
 		Compatibility: *compatibilityFlag,
 		Args:          getopt.Args(),
+	}
+
+	if err := podmancomposer.ProcessCommands(input); err != nil {
+		fmt.Printf("Error %v\n", err)
 	}
 }
 
@@ -151,5 +160,4 @@ Commands:
   unpause            Unpause services
   up                 Create and start containers
   version            Show the Docker Compose version information`
-
 }
